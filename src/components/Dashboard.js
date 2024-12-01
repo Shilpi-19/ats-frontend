@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { fetchApplications } from '../services/api'; // Import fetch function
 import './Dashboard.css'; // Importing CSS for styling
 
 const Dashboard = () => {
   const [applications, setApplications] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchApplications = async () => {
+    const getApplications = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/applications');
-        setApplications(response.data);
-      } catch (error) {
-        alert('Failed to load applications');
+        const data = await fetchApplications(); // Fetch data
+        setApplications(data); // Set the applications state with the fetched data
+      } catch (err) {
+        setError('Failed to load applications'); // Handle errors
       }
     };
 
-    fetchApplications();
+    getApplications();
   }, []);
 
   return (
     <div className="dashboard">
       <h2>Recruiter Dashboard</h2>
+      {error && <p className="error">{error}</p>} {/* Display error if there's an issue */}
       <table>
         <thead>
           <tr>
@@ -30,6 +32,7 @@ const Dashboard = () => {
           </tr>
         </thead>
         <tbody>
+          {/* Ensure the data is being mapped correctly */}
           {applications.map((app) => (
             <tr key={app.id}>
               <td>{app.name}</td>
